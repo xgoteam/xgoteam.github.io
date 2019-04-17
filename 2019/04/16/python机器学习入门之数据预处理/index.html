@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="python机器学习入门之数据预处理">
+
+
+
+
+  <meta name="keywords" content="Python, 机器学习, 数据分析, xGo 开发博客">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xGo 开发博客">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.5.0">
+
+
+
+<link rel="canonical" href="https://xgoteam.com/2019/04/16/python机器学习入门之数据预处理/">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.5.0">
+
+
+
+
+
+
+  
+
+
+  <script id="google_analytics">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-137180012-8', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+    <title> python机器学习入门之数据预处理 - xGo 开发博客 </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">xGo 开发博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">xGo 开发博客</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          python机器学习入门之数据预处理
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-16
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/categories/机器学习/">机器学习</a>
+            
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#python机器学习入门之数据预处理"><span class="toc-text">python机器学习入门之数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#机器学习的流程"><span class="toc-text">机器学习的流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数据处理阶段"><span class="toc-text">数据处理阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#训练模型阶段"><span class="toc-text">训练模型阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实际业务场景"><span class="toc-text">实际业务场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么使用-Python-进行机器学习"><span class="toc-text">为什么使用 Python 进行机器学习</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Python-更专注于解决现实问题"><span class="toc-text">Python 更专注于解决现实问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Python-很慢？"><span class="toc-text">Python 很慢？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据预处理"><span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#均值移除（列处理）"><span class="toc-text">均值移除（列处理）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#范围缩放（列处理）"><span class="toc-text">范围缩放（列处理）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#归一化（行处理）"><span class="toc-text">归一化（行处理）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二值化"><span class="toc-text">二值化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#独热编码"><span class="toc-text">独热编码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#标签编码"><span class="toc-text">标签编码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <h2 id="python机器学习入门之数据预处理"><a href="#python机器学习入门之数据预处理" class="headerlink" title="python机器学习入门之数据预处理"></a>python机器学习入门之数据预处理</h2><hr>
+<h3 id="机器学习的流程"><a href="#机器学习的流程" class="headerlink" title="机器学习的流程"></a>机器学习的流程</h3><h4 id="数据处理阶段"><a href="#数据处理阶段" class="headerlink" title="数据处理阶段"></a>数据处理阶段</h4><ol>
+<li>数据采集   </li>
+<li>数据清洗  </li>
+</ol>
+<h4 id="训练模型阶段"><a href="#训练模型阶段" class="headerlink" title="训练模型阶段"></a>训练模型阶段</h4><ol start="3">
+<li>数据预处理  </li>
+<li>选择模型（算法）  </li>
+<li>验证模型  </li>
+<li>训练模型  </li>
+<li>测试模型（模型不合适 -&gt; 选择模型 或 训练模型）  </li>
+</ol>
+<h4 id="实际业务场景"><a href="#实际业务场景" class="headerlink" title="实际业务场景"></a>实际业务场景</h4><ol start="8">
+<li>使用模型  </li>
+<li>维护和升级  </li>
+</ol>
+<h3 id="为什么使用-Python-进行机器学习"><a href="#为什么使用-Python-进行机器学习" class="headerlink" title="为什么使用 Python 进行机器学习"></a>为什么使用 Python 进行机器学习</h3><h4 id="Python-更专注于解决现实问题"><a href="#Python-更专注于解决现实问题" class="headerlink" title="Python 更专注于解决现实问题"></a>Python 更专注于解决现实问题</h4><p>Python 提高了大量数据处理（ NumPy、Pandas ）、机器学习（ Scikit_learn ）及深度学习（ TensorFlow、PyTorch 等）相关的依赖库，使用者可以更加专注算法的实现而不用从头开始实现基本算法。</p>
+<h4 id="Python-很慢？"><a href="#Python-很慢？" class="headerlink" title="Python 很慢？"></a>Python 很慢？</h4><p>Python 确实很慢，但是可以把计算量大的部分交由其他更高效（但更难使用）的语言（如 C 和 C++ ）进行处理。实际运用中，几乎所有程序都会使用 NumPy 去完成计算，所有没有必要担心程序的运行速度。<br>NumPy 与原生 Python 的比较：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from datetime import datetime</span><br><span class="line"><span class="comment"># 原生python</span></span><br><span class="line">n = 100000</span><br><span class="line">start = datetime.now()</span><br><span class="line">A, B = [], []</span><br><span class="line">for i in range(n):</span><br><span class="line">    A.append(i ** 2)</span><br><span class="line">    B.append(i ** 3)</span><br><span class="line">C = []</span><br><span class="line">for a, b in zip(A, B):</span><br><span class="line">    C.append(a + b)</span><br><span class="line">t1 = (datetime.now() - start).microseconds</span><br><span class="line"></span><br><span class="line"><span class="comment"># numpy</span></span><br><span class="line">start = datetime.now()</span><br><span class="line">A, B = np.arange(n) ** 2, np.arange(n) ** 3</span><br><span class="line">C = A + B</span><br><span class="line">t2 = (datetime.now() - start).microseconds</span><br><span class="line"></span><br><span class="line">print(f'&#123;t1/t2&#125;倍')</span><br><span class="line"><span class="comment"># 大约是20倍</span></span><br></pre></td></tr></table></figure>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><h4 id="均值移除（列处理）"><a href="#均值移除（列处理）" class="headerlink" title="均值移除（列处理）"></a>均值移除（列处理）</h4><p>通过调整令样本矩阵中每一列（特征）的平均值为 0 ，标准差为 1 。  这样一来，所有特征对最终模型的预测结果都有接近一致的贡献，模型对每个特征的倾向性更加均衡。  </p>
+<p>假设样本为 $[a, b, c]$<br>均值：$m=\frac{(a+b+c)}{3}$<br>标准差：$s=\sqrt{\frac{(a-m)^2+(b-m)^2+(c-m)^2}{3}}$<br>均值 -&gt; 0：$a^{‘}=a-m$ , $b^{‘}=b-m$ , $c^{‘}=c-m$<br>标准差 -&gt; 1：$a^{“}=\frac{a^{‘}}{s}$ , $b^{“}=\frac{b^{‘}}{s}$ , $c^{“}=\frac{c^{‘}}{s}$<br>得到标准样本 $[a^{“}, b^{“}, c^{“}]$</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">raw_samples = np.array([</span><br><span class="line">    [3, -1.5,  2,   -5.4],</span><br><span class="line">    [0,  4,   -0.3,  2.1],</span><br><span class="line">    [1,  3.3, -1.9, -4.3]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># numpy</span></span><br><span class="line"><span class="comment"># 均值移除</span></span><br><span class="line">std_samples = raw_samples.copy()</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> std_samples.T:</span><br><span class="line">    col_mean = col.mean()</span><br><span class="line">    col_std = col.std()</span><br><span class="line">    col -= col_mean</span><br><span class="line">    col /= col_std</span><br><span class="line"><span class="builtin-name">print</span>(std_samples)</span><br><span class="line"><span class="builtin-name">print</span>(std_samples.mean(<span class="attribute">axis</span>=0))</span><br><span class="line"><span class="builtin-name">print</span>(std_samples.std(<span class="attribute">axis</span>=0))</span><br><span class="line"></span><br><span class="line"><span class="comment"># sklearn</span></span><br><span class="line"><span class="comment"># 均值移除</span></span><br><span class="line">import sklearn.preprocessing as sp</span><br><span class="line">std_samples = sp.scale(raw_samples)</span><br><span class="line"><span class="builtin-name">print</span>(std_samples)</span><br><span class="line"><span class="builtin-name">print</span>(std_samples.mean(<span class="attribute">axis</span>=0))</span><br><span class="line"><span class="builtin-name">print</span>(std_samples.std(<span class="attribute">axis</span>=0))</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># std_samples</span><br><span class="line">[[ <span class="number">1.33630621</span> <span class="number">-1.40451644</span>  <span class="number">1.29110641</span> <span class="number">-0.86687558</span>]</span><br><span class="line"> [<span class="number">-1.06904497</span>  <span class="number">0.84543708</span> <span class="number">-0.14577008</span>  <span class="number">1.40111286</span>]</span><br><span class="line"> [<span class="number">-0.26726124</span>  <span class="number">0.55907936</span> <span class="number">-1.14533633</span> <span class="number">-0.53423728</span>]]</span><br><span class="line"></span><br><span class="line"># std_samples.mean(axis=<span class="number">0</span>)</span><br><span class="line">[<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"></span><br><span class="line"># std_samples.std(axis=<span class="number">0</span>)</span><br><span class="line">[<span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span>]</span><br></pre></td></tr></table></figure>
+<h4 id="范围缩放（列处理）"><a href="#范围缩放（列处理）" class="headerlink" title="范围缩放（列处理）"></a>范围缩放（列处理）</h4><p>将样本矩阵每一列的元素经过线性变换，使得所有列的元素都处在同样的范围区间内。<br>样本矩阵中每一列的最大值和最小值为某个给定的值 ([0, 1]) ，其他元素线性变换。</p>
+<p>变换原理： $y = kx + b$<br>最小值：$y_{min} = kx_{min} + b$<br>最大值：$y_{max} = kx_{max} + b$<br>矩阵运算： $ \begin{vmatrix} x_{min} &amp; 1 \ x_{max} &amp; 1 \ \end{vmatrix} * \begin{vmatrix} k \ b \ \end{vmatrix} = \begin{vmatrix} y_{min} \ y_{max} \ \end{vmatrix}$</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">raw_samples = np.array([</span><br><span class="line">    [3, -1.5,  2,   -5.4],</span><br><span class="line">    [0,  4,   -0.3,  2.1],</span><br><span class="line">    [1,  3.3, -1.9, -4.3]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最小值,最大值</span></span><br><span class="line"><span class="builtin-name">print</span>(raw_samples.min(<span class="attribute">axis</span>=0)) # [0. -1.5 -1.9 -5.4]</span><br><span class="line"><span class="builtin-name">print</span>(raw_samples.max(<span class="attribute">axis</span>=0)) # [3.  4.   2.   2.1]</span><br><span class="line"></span><br><span class="line"><span class="comment"># numpy</span></span><br><span class="line"><span class="comment"># 范围缩放</span></span><br><span class="line">mms_samples = raw_samples.copy()</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> mms_samples.T:</span><br><span class="line">    col -= col.min()</span><br><span class="line">    col /= col.max()</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples)</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples.min(<span class="attribute">axis</span>=0))</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples.max(<span class="attribute">axis</span>=0))</span><br><span class="line"></span><br><span class="line"><span class="comment"># sklearn</span></span><br><span class="line"><span class="comment"># 范围缩放</span></span><br><span class="line">import sklearn.preprocessing as sp</span><br><span class="line">mms = sp.MinMaxScaler(feature_range=(0, 1))  # 缩放器对象</span><br><span class="line">mms_samples = mms.fit_transform(raw_samples)</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples)</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples.min(<span class="attribute">axis</span>=0))</span><br><span class="line"><span class="builtin-name">print</span>(mms_samples.max(<span class="attribute">axis</span>=0))</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># mms_samples</span><br><span class="line">[[<span class="number">1.</span>         <span class="number">0.</span>         <span class="number">1.</span>         <span class="number">0.</span>        ]</span><br><span class="line"> [<span class="number">0.</span>         <span class="number">1.</span>         <span class="number">0.41025641</span> <span class="number">1.</span>        ]</span><br><span class="line"> [<span class="number">0.33333333</span> <span class="number">0.87272727</span> <span class="number">0.</span>         <span class="number">0.14666667</span>]]</span><br><span class="line"></span><br><span class="line"># mms_samples.min(axis=<span class="number">0</span>)</span><br><span class="line">[<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"></span><br><span class="line"># mms_samples.max(axis=<span class="number">0</span>)</span><br><span class="line">[<span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span>]</span><br></pre></td></tr></table></figure>
+<h4 id="归一化（行处理）"><a href="#归一化（行处理）" class="headerlink" title="归一化（行处理）"></a>归一化（行处理）</h4><p>用每个样本各个特征值除以该样本所有特征值绝对值之和，使得的处理后的样本矩阵中各行所有元素的绝对值之和为 1 。</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>Python</th>
+<th>C++</th>
+<th>Java</th>
+<th>PHP</th>
+<th>SUM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>处理前</td>
+<td>20</td>
+<td>30</td>
+<td>40</td>
+<td>10</td>
+<td>100</td>
+</tr>
+<tr>
+<td>处理后</td>
+<td>0.2</td>
+<td>0.3</td>
+<td>0.4</td>
+<td>0.1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">raw_samples = np.array([</span><br><span class="line">    [3, -1.5,  2,   -5.4],</span><br><span class="line">    [0,  4,   -0.3,  2.1],</span><br><span class="line">    [1,  3.3, -1.9, -4.3]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># numpy</span></span><br><span class="line"><span class="comment"># 归一化</span></span><br><span class="line">nor_samples = raw_samples.copy()</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> nor_samples:</span><br><span class="line">    row /= np.abs(row).sum()</span><br><span class="line"><span class="builtin-name">print</span>(nor_samples)</span><br><span class="line"><span class="builtin-name">print</span>(abs(nor_samples).sum(<span class="attribute">axis</span>=1))</span><br><span class="line"></span><br><span class="line"><span class="comment"># sklearn</span></span><br><span class="line"><span class="comment"># 归一化</span></span><br><span class="line">import sklearn.preprocessing as sp</span><br><span class="line">nor_samples = sp.normalize(raw_samples, <span class="attribute">norm</span>=<span class="string">'l1'</span>)</span><br><span class="line"><span class="comment"># norm='ln' 为 ln范数，表示列元素的绝对值的n次方之和</span></span><br><span class="line"><span class="builtin-name">print</span>(nor_samples)</span><br><span class="line"><span class="builtin-name">print</span>(abs(nor_samples).sum(<span class="attribute">axis</span>=1))</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># nor_samples</span><br><span class="line">[[<span class="number">0.25210084</span> <span class="number">-0.12605042</span>  <span class="number">0.16806723</span> <span class="number">-0.45378151</span>]</span><br><span class="line"> [<span class="number">0.</span>          <span class="number">0.625</span>      <span class="number">-0.046875</span>    <span class="number">0.328125</span>  ]</span><br><span class="line"> [<span class="number">0.0952381</span>   <span class="number">0.31428571</span> <span class="number">-0.18095238</span> <span class="number">-0.40952381</span>]]</span><br><span class="line"></span><br><span class="line"># abs(nor_samples).sum(axis=<span class="number">1</span>)</span><br><span class="line">[<span class="number">1.</span> <span class="number">1.</span> <span class="number">1.</span>]</span><br></pre></td></tr></table></figure>
+<h4 id="二值化"><a href="#二值化" class="headerlink" title="二值化"></a>二值化</h4><p>根据事先给定阈值，将样本矩阵中高于阈值的元素设置为 1 ，否则设置为 0 ，得到一个完全由 1 和 0 组成的二值矩阵。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">raw_samples = np.array([</span><br><span class="line">    [<span class="number">3</span>, <span class="number">-1.5</span>,  <span class="number">2</span>,   <span class="number">-5.4</span>],</span><br><span class="line">    [<span class="number">0</span>,  <span class="number">4</span>,   <span class="number">-0.3</span>,  <span class="number">2.1</span>],</span><br><span class="line">    [<span class="number">1</span>,  <span class="number">3.3</span>, <span class="number">-1.9</span>, <span class="number">-4.3</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">bin_samples = raw_samples.copy()</span><br><span class="line"></span><br><span class="line"># numpy</span><br><span class="line"># 二值化 -&gt; 掩码</span><br><span class="line"># 阈值为<span class="number">1.4</span></span><br><span class="line">bin_samples[bin_samples &lt;= <span class="number">1.4</span>] = <span class="number">0</span></span><br><span class="line">bin_samples[bin_samples &gt; <span class="number">1.4</span>] = <span class="number">1</span></span><br><span class="line">print(bin_samples)</span><br><span class="line"></span><br><span class="line"># sklearn</span><br><span class="line"># 二值化</span><br><span class="line">import sklearn.preprocessing as sp</span><br><span class="line">bin = sp.Binarizer(threshold=<span class="number">1.4</span>)  # 二值化对象，阈值为<span class="number">1.4</span></span><br><span class="line">bin_samples = bin.transform(raw_samples)</span><br><span class="line">print(bin_samples)</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># bin_samples</span><br><span class="line">[[<span class="number">1.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">1.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span>]]</span><br></pre></td></tr></table></figure>
+<h4 id="独热编码"><a href="#独热编码" class="headerlink" title="独热编码"></a>独热编码</h4><p>用一个只包含一个 1 和若干个 0 的序列来表达每个特征值的编码方式，借此既保留了样本矩阵的所有细节，同时又得到一个只含有 1 和 0 的稀疏矩阵，既可以提高模型的容错性，同时还能节省内存空间。</p>
+<table>
+<thead>
+<tr>
+<th>处理前</th>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+<th>处理后</th>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>1</td>
+<td>2</td>
+<td>0</td>
+<td>A</td>
+<td>10</td>
+<td>100</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>B</td>
+<td>4</td>
+<td>5</td>
+<td>3</td>
+<td>B</td>
+<td>01</td>
+<td>010</td>
+<td>0100</td>
+</tr>
+<tr>
+<td>C</td>
+<td>1</td>
+<td>8</td>
+<td>6</td>
+<td>C</td>
+<td>10</td>
+<td>001</td>
+<td>0010</td>
+</tr>
+<tr>
+<td>D</td>
+<td>4</td>
+<td>2</td>
+<td>9</td>
+<td>D</td>
+<td>01</td>
+<td>100</td>
+<td>0000</td>
+</tr>
+</tbody>
+</table>
+<p>映射规则</p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+<th>c  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-&gt; 10</td>
+<td>2-&gt; 100</td>
+<td>0-&gt; 1000</td>
+</tr>
+<tr>
+<td>4-&gt; 01</td>
+<td>5-&gt; 010</td>
+<td>3-&gt; 0100  </td>
+</tr>
+<tr>
+<td>-</td>
+<td>8-&gt; 001</td>
+<td>6-&gt; 0010</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>9-&gt; 0001</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">import numpy <span class="keyword">as</span> np</span><br><span class="line">raw_samples = np.array([</span><br><span class="line">    [<span class="meta">1, 2, 0</span>],</span><br><span class="line">    [<span class="meta">4, 5, 3</span>],</span><br><span class="line">    [<span class="meta">1, 8, 6</span>],</span><br><span class="line">    [<span class="meta">4, 2, 9</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="meta"># 建立编码字典列表</span></span><br><span class="line">code_tables = []</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> raw_samples.T:</span><br><span class="line">    <span class="meta"># 针对一列的编码字典</span></span><br><span class="line">    code_table = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> val <span class="keyword">in</span> col:</span><br><span class="line">        code_table[val] = None</span><br><span class="line">    code_tables.append(code_table)</span><br><span class="line"></span><br><span class="line"><span class="meta"># 为编码字典列表中每个编码字典添加值</span></span><br><span class="line"><span class="keyword">for</span> code_table <span class="keyword">in</span> code_tables:</span><br><span class="line">    size = len(code_table)</span><br><span class="line">    <span class="keyword">for</span> one, <span class="function">key <span class="keyword">in</span> <span class="title">enumerate</span>(<span class="params">sorted(code_table.keys(</span>))):</span></span><br><span class="line"><span class="function">        code_table[key] </span>= np.zeros(shape=size, dtype=<span class="keyword">int</span>)</span><br><span class="line">        code_table[key][one] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 根据编码字典表对原始样本矩阵做独热编码</span></span><br><span class="line">ohe_samples = []</span><br><span class="line"><span class="keyword">for</span> raw_sample <span class="keyword">in</span> raw_samples:</span><br><span class="line">    ohe_sample = np.array([], dtype=<span class="keyword">int</span>)</span><br><span class="line">    <span class="meta"># i: 原始样本的列数, key: 编码字典中的编码值</span></span><br><span class="line">    <span class="keyword">for</span> i, <span class="function">key <span class="keyword">in</span> <span class="title">enumerate</span>(<span class="params">raw_sample</span>):</span></span><br><span class="line"><span class="function">        ohe_sample </span>= np.hstack((ohe_sample, code_tables[i][key]))</span><br><span class="line">    ohe_samples.append(ohe_sample)</span><br><span class="line"><span class="meta"># 编码完成</span></span><br><span class="line">ohe_samples = np.array(ohe_samples)</span><br><span class="line">print(ohe_samples)</span><br><span class="line"></span><br><span class="line"><span class="meta"># sklearn</span></span><br><span class="line"><span class="meta"># 独热编码</span></span><br><span class="line">import sklearn.preprocessing <span class="keyword">as</span> sp</span><br><span class="line">ohe = sp.OneHotEncoder(sparse=False, dtype=<span class="keyword">int</span>)  <span class="meta"># 独热编码器对象</span></span><br><span class="line">ohe_samples = ohe.fit_transform(raw_samples)</span><br><span class="line">print(ohe_samples)</span><br><span class="line"><span class="meta"># spares = False, 记录0和1,输出原数组</span></span><br><span class="line">[<span class="meta">[1 0 1 0 0 1 0 0 0</span>]</span><br><span class="line"> [<span class="meta">0 1 0 1 0 0 1 0 0</span>]</span><br><span class="line"> [<span class="meta">1 0 0 0 1 0 0 1 0</span>]</span><br><span class="line"> [<span class="meta">0 1 1 0 0 0 0 0 1</span>]]</span><br><span class="line"></span><br><span class="line"><span class="meta"># sparse = True, 只记录1的索引,使用内存空间较少</span></span><br><span class="line">(<span class="number">0</span>, <span class="number">5</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">0</span>, <span class="number">2</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">0</span>, <span class="number">0</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">1</span>, <span class="number">6</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">1</span>, <span class="number">3</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">1</span>, <span class="number">1</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">2</span>, <span class="number">7</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">2</span>, <span class="number">4</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">2</span>, <span class="number">0</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">3</span>, <span class="number">8</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">3</span>, <span class="number">2</span>)        <span class="number">1</span></span><br><span class="line">(<span class="number">3</span>, <span class="number">1</span>)        <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h4 id="标签编码"><a href="#标签编码" class="headerlink" title="标签编码"></a>标签编码</h4><p>标签编码即是将文本形式的特征值转换为数值形式的特征值，其编码数值源于标签字符串的字典排序，与标签本身的含义无关。</p>
+<table>
+<thead>
+<tr>
+<th>语言（文本形式）</th>
+<th>编码（数值形式）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>1</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> sklearn.preprocessing <span class="keyword">as</span> sp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 原始样本</span></span><br><span class="line">raw_samples = np.array(</span><br><span class="line">    [<span class="string">'C'</span>, <span class="string">'Java'</span>, <span class="string">'C'</span>, <span class="string">'Python'</span>,<span class="string">'Java'</span>, <span class="string">'PHP'</span>, <span class="string">'Python'</span>, <span class="string">'PHP'</span>]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 标签编码器，编码时会记录标签和编码的映射，用于反查</span></span><br><span class="line">lbe = sp.LabelEncoder() </span><br><span class="line"></span><br><span class="line"><span class="comment"># 标签编码</span></span><br><span class="line">lbe_samples = lbe.fit_transform(raw_samples)</span><br><span class="line"><span class="built_in">print</span>(lbe_samples)</span><br><span class="line">[<span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">2</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 反查</span></span><br><span class="line">raw_samples = lbe.inverse_transform(lbe_samples)</span><br><span class="line"><span class="built_in">print</span>(raw_samples)</span><br><span class="line">[<span class="string">'C'</span> <span class="string">'Java'</span> <span class="string">'C'</span> <span class="string">'Python'</span> <span class="string">'Java'</span> <span class="string">'PHP'</span> <span class="string">'Python'</span> <span class="string">'PHP'</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>数据预处理是机器学习训练模型阶段的起点。通过数据预处理，我们可以得到理想的用于训练和测试模型的数据集，之后就可以开始训练算法模型了。<br>希望这篇文章对于大家入门机器学习能有一定的帮助！</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>xGo Team</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="https://xgoteam.com">https://xgoteam.com</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="https://xgoteam.com/2019/04/16/python机器学习入门之数据预处理/">https://xgoteam.com/2019/04/16/python机器学习入门之数据预处理/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/python/">Python</a>
+            
+              <a href="/tags/机器学习/">机器学习</a>
+            
+              <a href="/tags/数据分析/">数据分析</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/04/01/Firebase 云消息传递实践/">
+        <span class="next-text nav-default">Firebase云消息传递实践</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xGo Team</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script>
+
+  </body>
+</html>

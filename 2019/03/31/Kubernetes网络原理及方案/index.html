@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Kubernetes网络原理及方案">
+
+
+
+
+  <meta name="keywords" content="虚拟化, 容器, Kubernetes, xGo 开发博客">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xGo 开发博客">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.5.0">
+
+
+
+<link rel="canonical" href="https://xgoteam.com/2019/03/31/Kubernetes网络原理及方案/">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.5.0">
+
+
+
+
+
+
+  
+
+
+  <script id="google_analytics">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-137180012-8', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+    <title> Kubernetes网络原理及方案 - xGo 开发博客 </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">xGo 开发博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">xGo 开发博客</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Kubernetes网络原理及方案
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-03-31
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/categories/容器/">容器</a>
+            
+              <a href="/categories/容器/集群管理/">集群管理</a>
+            
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes网络模型"><span class="toc-text">Kubernetes网络模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker网络基础"><span class="toc-text">Docker网络基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes网络基础"><span class="toc-text">Kubernetes网络基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes网络开源组件"><span class="toc-text">Kubernetes网络开源组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#网络开源组件性能对比分析"><span class="toc-text">网络开源组件性能对比分析</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <h2 id="Kubernetes网络模型"><a href="#Kubernetes网络模型" class="headerlink" title="Kubernetes网络模型"></a>Kubernetes网络模型</h2><p>在Kubernetes网络中存在两种IP（Pod IP和Service Cluster IP），Pod IP 地址是实际存在于某个网卡(可以是虚拟设备)上的，Service Cluster IP它是一个虚拟IP，是由kube-proxy使用Iptables规则重新定向到其本地端口，再均衡到后端Pod的。下面讲讲Kubernetes Pod网络设计模型：</p>
+<p><strong>1、基本原则：</strong></p>
+<p>每个Pod都拥有一个独立的IP地址（IPper Pod），而且假定所有的pod都在一个可以直接连通的、扁平的网络空间中。</p>
+<p><strong>2、设计原因：</strong></p>
+<p>用户不需要额外考虑如何建立Pod之间的连接，也不需要考虑将容器端口映射到主机端口等问题。</p>
+<p><strong>3、网络要求：</strong></p>
+<p>所有的容器都可以在不用NAT的方式下同别的容器通讯；所有节点都可在不用NAT的方式下同所有容器通讯；容器的地址和别人看到的地址是同一个地址。</p>
+<h2 id="Docker网络基础"><a href="#Docker网络基础" class="headerlink" title="Docker网络基础"></a>Docker网络基础</h2><ul>
+<li><strong>Linux网络名词解释：</strong></li>
+</ul>
+<p><strong>1、网络的命名空间：</strong>Linux在网络栈中引入网络命名空间，将独立的网络协议栈隔离到不同的命令空间中，彼此间无法通信；docker利用这一特性，实现不容器间的网络隔离。</p>
+<p><strong>2、Veth设备对：</strong>Veth设备对的引入是为了实现在不同网络命名空间的通信。</p>
+<p><strong>3、Iptables/Netfilter：</strong>Netfilter负责在内核中执行各种挂接的规则(过滤、修改、丢弃等)，运行在内核 模式中；Iptables模式是在用户模式下运行的进程，负责协助维护内核中Netfilter的各种规则表；通过二者的配合来实现整个Linux网络协议栈中灵活的数据包处理机制。</p>
+<p><strong>4、网桥：</strong>网桥是一个二层网络设备,通过网桥可以将linux支持的不同的端口连接起来,并实现类似交换机那样的多对多的通信。</p>
+<p><strong>5、路由：</strong>Linux系统包含一个完整的路由功能，当IP层在处理数据发送或转发的时候，会使用路由表来决定发往哪里。</p>
+<ul>
+<li><strong>Docker生态技术栈</strong></li>
+</ul>
+<p>下图展示了Docker网络在整个Docker生态技术栈中的位置：</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205252.jpg" alt="20170526205252"></p>
+<ul>
+<li><strong>Docker网络实现</strong></li>
+</ul>
+<p><strong>1、单机**</strong>网络模式：**Bridge 、Host、Container、None，这里具体就不赘述了。</p>
+<p><strong>2、多机网络模**</strong>式：**一类是 Docker 在 1.9 版本中引入Libnetwork项目，对跨节点网络的原生支持；一类是通过插件（plugin）方式引入的第三方实现方案，比如 Flannel，Calico 等等。</p>
+<h2 id="Kubernetes网络基础"><a href="#Kubernetes网络基础" class="headerlink" title="Kubernetes网络基础"></a>Kubernetes网络基础</h2><p><strong>1、容器间通信：</strong></p>
+<p>同一个<a href="https://www.kubernetes.org.cn/tags/pod" target="_blank" rel="noopener">Pod</a>的容器共享同一个网络命名空间，它们之间的访问可以用localhost地址 + 容器端口就可以访问。</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205259.jpg" alt="20170526205259"></p>
+<p><strong>2、同一Node中Pod间通信：</strong></p>
+<p>同一Node中Pod的默认路由都是docker0的地址，由于它们关联在同一个docker0网桥上，地址网段相同，所有它们之间应当是能直接通信的。</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205307.jpg" alt="20170526205307"></p>
+<p><strong>3、不同Node中Pod间通信：</strong></p>
+<p>不同Node中Pod间通信要满足2个条件： Pod的IP不能冲突； 将Pod的IP和所在的Node的IP关联起来，通过这个关联让Pod可以互相访问。</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205316.jpg" alt="20170526205316"></p>
+<p><strong>4、Service介绍：</strong></p>
+<p>Service是一组Pod的服务抽象，相当于一组Pod的LB，负责将请求分发给对应的</p>
+<p>Pod；Service会为这个LB提供一个IP，一般称为ClusterIP。</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205331.jpg" alt="20170526205331"></p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205339.jpg" alt="20170526205339"></p>
+<p><strong>5、Kube-proxy介绍：</strong></p>
+<p>Kube-proxy是一个简单的网络代理和负载均衡器，它的作用主要是负责Service的实现，具体来说，就是实现了内部从Pod到Service和外部的从NodePort向Service的访问。</p>
+<p><strong>实现方式：</strong></p>
+<ul>
+<li><p>userspace是在用户空间，通过kuber-proxy实现LB的代理服务，这个是kube-proxy的最初的版本，较为稳定，但是效率也自然不太高。</p>
+</li>
+<li><p>iptables是纯采用iptables来实现LB，是目前kube-proxy默认的方式。</p>
+</li>
+</ul>
+<p><strong>下面是iptables模式下Kube-proxy的实现方式：</strong></p>
+<p><strong><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205348.jpg" alt="20170526205348"></strong></p>
+<ul>
+<li><p>在这种模式下，kube-proxy监视Kubernetes主服务器添加和删除服务和端点对象。对于每个服务，它安装iptables规则，捕获到服务的clusterIP（虚拟）和端口的流量，并将流量重定向到服务的后端集合之一。对于每个Endpoints对象，它安装选择后端Pod的iptables规则。</p>
+</li>
+<li><p>默认情况下，后端的选择是随机的。可以通过将service.spec.sessionAffinity设置为“ClientIP”（默认为“无”）来选择基于客户端IP的会话关联。</p>
+</li>
+<li><p>与用户空间代理一样，最终结果是绑定到服务的IP:端口的任何流量被代理到适当的后端，而客户端不知道关于Kubernetes或服务或Pod的任何信息。这应该比用户空间代理更快，更可靠。然而，与用户空间代理不同，如果最初选择的Pod不响应，则iptables代理不能自动重试另一个Pod，因此它取决于具有工作准备就绪探测。</p>
+</li>
+</ul>
+<p><strong>6、Kube-dns介绍</strong></p>
+<p>Kube-dns用来为kubernetes service分配子域名，在集群中可以通过名称访问service；通常kube-dns会为service赋予一个名为“service名称.namespace.svc.cluster.local”的A记录，用来解析service的clusterip。</p>
+<p><strong>Kube-dns组件：</strong></p>
+<ul>
+<li><p>在Kubernetes v1.4版本之前由“Kube2sky、Etcd、Skydns、Exechealthz”四个组件组成。</p>
+</li>
+<li><p>在Kubernetes v1.4版本及之后由“Kubedns、dnsmasq、exechealthz”三个组件组成。</p>
+</li>
+</ul>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205356.jpg" alt="20170526205356"></p>
+<p><strong> Kubedns</strong></p>
+<ul>
+<li>接入SkyDNS，为dnsmasq提供查询服务。</li>
+<li>替换etcd容器，使用树形结构在内存中保存DNS记录。</li>
+<li>通过K8S API监视Service资源变化并更新DNS记录。</li>
+<li>服务10053端口。</li>
+</ul>
+<p><strong>Dnsmasq</strong></p>
+<ul>
+<li><p>Dnsmasq是一款小巧的DNS配置工具。</p>
+</li>
+<li><p>在kube-dns插件中的作用是：</p>
+</li>
+</ul>
+<ol>
+<li>通过kubedns容器获取DNS规则，在集群中提供DNS查询服务</li>
+<li>提供DNS缓存，提高查询性能</li>
+<li>降低kubedns容器的压力、提高稳定性</li>
+</ol>
+<ul>
+<li><p>Dockerfile在GitHub上Kubernetes组织的contrib仓库中，位于dnsmasq目录下。</p>
+</li>
+<li><p>在kube-dns插件的编排文件中可以看到，dnsmasq通过参数–server=127.0.0.1:10053指定upstream为kubedns。</p>
+</li>
+</ul>
+<p><strong>Exechealthz</strong></p>
+<ul>
+<li>在kube-dns插件中提供健康检查功能。</li>
+<li>源码同样在contrib仓库中，位于exec-healthz目录下。</li>
+<li>新版中会对两个容器都进行健康检查，更加完善。</li>
+</ul>
+<h2 id="Kubernetes网络开源组件"><a href="#Kubernetes网络开源组件" class="headerlink" title="Kubernetes网络开源组件"></a>Kubernetes网络开源组件</h2><p><strong>1、技术术语：</strong></p>
+<p><strong>IPAM：</strong>IP地址管理；这个IP地址管理并不是容器所特有的，传统的网络比如说DHCP其实也是一种IPAM，到了容器时代我们谈IPAM，主流的两种方法： 基于CIDR的IP地址段分配地或者精确为每一个容器分配IP。但总之一旦形成一个容器主机集群之后，上面的容器都要给它分配一个全局唯一的IP地址，这就涉及到IPAM的话题。</p>
+<p><strong>Overlay：</strong>在现有二层或三层网络之上再构建起来一个独立的网络，这个网络通常会有自己独立的IP地址空间、交换或者路由的实现。</p>
+<p><strong>IPSesc：</strong>一个点对点的一个加密通信协议，一般会用到Overlay网络的数据通道里。</p>
+<p><strong>vxLAN：</strong>由VMware、Cisco、RedHat等联合提出的这么一个解决方案，这个解决方案最主要是解决VLAN支持虚拟网络数量（4096）过少的问题。因为在公有云上每一个租户都有不同的VPC，4096明显不够用。就有了vxLAN，它可以支持1600万个虚拟网络，基本上公有云是够用的。</p>
+<p><strong>网桥Bridge： </strong>连接两个对等网络之间的网络设备，但在今天的语境里指的是Linux Bridge，就是大名鼎鼎的Docker0这个网桥。</p>
+<p><strong>BGP：</strong> 主干网自治网络的路由协议，今天有了互联网，互联网由很多小的自治网络构成的，自治网络之间的三层路由是由BGP实现的。</p>
+<p><strong>SDN、Openflow：</strong> 软件定义网络里面的一个术语，比如说我们经常听到的流表、控制平面，或者转发平面都是Openflow里的术语。</p>
+<p><strong>2、容器网络方案：</strong></p>
+<p><strong>隧道方案（ Overlay Networking ）</strong></p>
+<p>隧道方案在IaaS层的网络中应用也比较多，大家共识是随着节点规模的增长复杂度会提升，而且出了网络问题跟踪起来比较麻烦，大规模集群情况下这是需要考虑的一个点。</p>
+<ul>
+<li><strong>Weave：</strong>UDP广播，本机建立新的BR，通过PCAP互通</li>
+<li><strong>Open vSwitch（OVS）：</strong>基于VxLan和GRE协议，但是性能方面损失比较严重</li>
+<li><strong>Flannel：</strong>UDP广播，VxLan</li>
+<li><strong>Racher：</strong>IPsec</li>
+</ul>
+<p><strong>路由方案</strong></p>
+<p>路由方案一般是从3层或者2层实现隔离和跨主机容器互通的，出了问题也很容易排查。</p>
+<ul>
+<li><strong>Calico：</strong>基于BGP协议的路由方案，支持很细致的ACL控制，对混合云亲和度比较高。</li>
+<li><strong>Macvlan：</strong>从逻辑和Kernel层来看隔离性和性能最优的方案，基于二层隔离，所以需要二层路由器支持，大多数云服务商不支持，所以混合云上比较难以实现。</li>
+</ul>
+<p><strong>3、CNM &amp; CNI阵营：</strong></p>
+<p>容器网络发展到现在，形成了两大阵营，就是Docker的CNM和Google、CoreOS、Kuberenetes主导的CNI。首先明确一点，CNM和CNI并不是网络实现，他们是网络规范和网络体系，从研发的角度他们就是一堆接口，你底层是用Flannel也好、用Calico也好，他们并不关心，CNM和CNI关心的是网络管理的问题。</p>
+<p><strong>CNM（Docker LibnetworkContainer Network Model）:</strong></p>
+<p>Docker Libnetwork的优势就是原生，而且和Docker容器生命周期结合紧密；缺点也可以理解为是原生，被Docker“绑架”。</p>
+<ul>
+<li>Docker Swarm overlay</li>
+<li>Macvlan &amp; IP networkdrivers</li>
+<li>Calico</li>
+<li>Contiv</li>
+<li>Weave</li>
+</ul>
+<p><strong>CNI（Container NetworkInterface）：</strong></p>
+<p>CNI的优势是兼容其他容器技术（e.g. rkt）及上层编排系统（Kubernetes &amp; Mesos)，而且社区活跃势头迅猛，Kubernetes加上CoreOS主推；缺点是非Docker原生。</p>
+<ul>
+<li>Kubernetes</li>
+<li>Weave</li>
+<li>Macvlan</li>
+<li>Calico</li>
+<li>Flannel</li>
+<li>Contiv</li>
+<li>Mesos CNI</li>
+</ul>
+<p><strong>4**</strong>、Flannel容器网络：**</p>
+<p>Flannel之所以可以搭建kubernets依赖的底层网络，是因为它可以实现以下两点：</p>
+<ul>
+<li>它给每个node上的docker容器分配相互不想冲突的IP地址；</li>
+<li>它能给这些IP地址之间建立一个覆盖网络，同过覆盖网络，将数据包原封不动的传递到目标容器内。</li>
+</ul>
+<p><strong>Flannel介绍</strong></p>
+<ul>
+<li>Flannel是CoreOS团队针对Kubernetes设计的一个网络规划服务，简单来说，它的功能是让集群中的不同节点主机创建的Docker容器都具有全集群唯一的虚拟IP地址。</li>
+<li>在默认的Docker配置中，每个节点上的Docker服务会分别负责所在节点容器的IP分配。这样导致的一个问题是，不同节点上容器可能获得相同的内外IP地址。并使这些容器之间能够之间通过IP地址相互找到，也就是相互ping通。</li>
+<li>Flannel的设计目的就是为集群中的所有节点重新规划IP地址的使用规则，从而使得不同节点上的容器能够获得“同属一个内网”且”不重复的”IP地址，并让属于不同节点上的容器能够直接通过内网IP通信。</li>
+<li>Flannel实质上是一种“覆盖网络(overlaynetwork)”，也就是将TCP数据包装在另一种网络包里面进行路由转发和通信，目前已经支持udp、vxlan、host-gw、aws-vpc、gce和alloc路由等数据转发方式，默认的节点间数据通信方式是UDP转发。</li>
+</ul>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205407.jpg" alt="20170526205407"></p>
+<p><strong>5、Calico容器网络：</strong></p>
+<p><strong>Calico介绍</strong></p>
+<ul>
+<li>Calico是一个纯3层的数据中心网络方案，而且无缝集成像OpenStack这种IaaS云架构，能够提供可控的VM、容器、裸机之间的IP通信。Calico不使用重叠网络比如flannel和libnetwork重叠网络驱动，它是一个纯三层的方法，使用虚拟路由代替虚拟交换，每一台虚拟路由通过BGP协议传播可达信息（路由）到剩余数据中心。</li>
+<li>Calico在每一个计算节点利用Linux Kernel实现了一个高效的vRouter来负责数据转发，而每个vRouter通过BGP协议负责把自己上运行的workload的路由信息像整个Calico网络内传播——小规模部署可以直接互联，大规模下可通过指定的BGP route reflector来完成。</li>
+<li>Calico节点组网可以直接利用数据中心的网络结构（无论是L2或者L3），不需要额外的NAT，隧道或者Overlay Network。</li>
+<li>Calico基于iptables还提供了丰富而灵活的网络Policy，保证通过各个节点上的ACLs来提供Workload的多租户隔离、安全组以及其他可达性限制等功能。</li>
+</ul>
+<p><strong>Calico架构图</strong></p>
+<p><strong><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205416.jpg" alt="20170526205416"></strong></p>
+<h2 id="网络开源组件性能对比分析"><a href="#网络开源组件性能对比分析" class="headerlink" title="网络开源组件性能对比分析"></a>网络开源组件性能对比分析</h2><p><strong>性能对比分析：</strong></p>
+<p><strong><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205425.jpg" alt="20170526205425"></strong></p>
+<p><strong>性能对比总结：</strong></p>
+<p>CalicoBGP 方案最好，不能用 BGP 也可以考虑 Calico ipip tunnel 方案；如果是 Coreos 系又能开 udp offload，flannel 是不错的选择；Docker 原生Overlay还有很多需要改进的地方。</p>
+<p><img src="https://www.kubernetes.org.cn/img/2017/05/20170526205431.jpg" alt="20170526205431"></p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>xGo Team</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="https://xgoteam.com">https://xgoteam.com</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="https://xgoteam.com/2019/03/31/Kubernetes网络原理及方案/">https://xgoteam.com/2019/03/31/Kubernetes网络原理及方案/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/虚拟化/">虚拟化</a>
+            
+              <a href="/tags/容器/">容器</a>
+            
+              <a href="/tags/Kubernetes/">Kubernetes</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2019/03/31/Git基础总结/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Git 基础总结</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2019/03/31/Docker中国官方镜像加速/">
+        <span class="next-text nav-default">Docker 中国官方镜像加速</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xGo Team</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script>
+
+  </body>
+</html>
